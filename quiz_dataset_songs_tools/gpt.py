@@ -26,7 +26,7 @@ class Adviser:
         self._gpt_model = "gpt-4"
         #self._gpt_model = "gpt-3.5-turbo"
 
-    def get_similar_songs(self, title: str, artist: str, cache_key: str):
+    def get_similar_songs(self, title: str, artist: str, cache_key: str) -> list[SimilarSong]:
         request = f'Give me four songs that can be mistaken for "{title}" by {artist}. Omit {artist} songs.'
         result_raw = self._get_from_cache(cache_key, 'similar_songs')
         if not result_raw:
@@ -41,7 +41,7 @@ class Adviser:
             raise Exception(f'Melformed GPT response: {result_raw}')
         return similar_songs
 
-    def get_interesting_fact(self, title: str, artist: str, cache_key: str):
+    def get_interesting_fact(self, title: str, artist: str, cache_key: str) -> str:
         request = f'Give me a short interesting fact about the song "{title}" by {artist} without mentioning song name and any artist names.'
         result_raw = self._get_from_cache(cache_key, 'interesting_fact')
         if not result_raw:
@@ -49,25 +49,25 @@ class Adviser:
             self._save_to_cache(cache_key, 'interesting_fact', result_raw)
         return result_raw
 
-    def _get_from_cache(self, cache_key, cache_group):
+    def _get_from_cache(self, cache_key: str, cache_group: str) -> str | None:
         cache_file_path = f'{self._cache_dir}/{cache_key}.gpt.{cache_group}.txt'
         if not os.path.exists(cache_file_path):
             return None
         with open(cache_file_path) as f:
             return f.read()
 
-    def _save_to_cache(self, cache_key, cache_group, data):
+    def _save_to_cache(self, cache_key: str, cache_group: str, data: str) -> None:
         cache_file_path = f'{self._cache_dir}/{cache_key}.gpt.{cache_group}.txt'
         with open(cache_file_path, 'w') as f:
             f.write(data)
 
-    def _get(self, request: str):
+    def _get(self, request: str) -> str:
         result = self._ask_gpt(request)
         # Strip noice
         result = result.strip('" ')
         return result
 
-    def _ask_gpt(self, request):
+    def _ask_gpt(self, request) -> str:
         messages=[
             {
                 "role": "system",

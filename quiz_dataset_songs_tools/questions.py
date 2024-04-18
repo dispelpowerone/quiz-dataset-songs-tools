@@ -1,5 +1,5 @@
 import json
-from gpt import Adviser
+from quiz_dataset_songs_tools.gpt import Adviser
 
 
 input_samples_index_path = 'output/popular_youtube_2/samples/index.json'

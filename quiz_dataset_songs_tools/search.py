@@ -7,8 +7,8 @@ import csv
 import requests
 import subprocess
 import shutil
-from yandex_music import Client
-from yandex_music.utils.request import Request
+from yandex_music import Client # type: ignore
+from yandex_music.utils.request import Request # type: ignore
 from quiz_dataset_songs_tools.config import config
 
 
@@ -26,7 +26,7 @@ def search_artist(artist: str):
 def search_track(title: str, artist: str):
     return client.search(f'{title} {artist}')
 
-def select_artist_id(search_result) -> int:
+def select_artist_id(search_result) -> int | None:
     if not search_result.artists:
         return None
     return search_result.artists.results[0].id
@@ -107,6 +107,7 @@ def get_download_link(track_id: int) -> str:
         if option.bitrate_in_kbps != 192:
             continue
         return option.direct_link
+    raise Exception(f'No download link found {download_options}')
 
 def download_track(track_link: str, file_name: str):
     subprocess.run([f'curl -vvv --max-time 60 --retry 3 --output {file_name} -H @headers.txt {track_link}'],
@@ -141,7 +142,7 @@ def save_error(e, dest_file_path: str):
     with open(dest_file_path, 'w') as f:
         f.write(str(e))
 
-def retrieve_one_song(title: str, artist: str, track_file: str, src_dir: str, dest_dir: str) -> None:
+def retrieve_one_song(title: str, artist: str, track_file: str, src_dir: str, dest_dir: str) -> dict[str, str | None]:
     dest_file_id = slugify(f'{title}_by_{artist}')
     dest_file_path = f'{dest_dir}/{dest_file_id}.mp3'
     if os.path.exists(dest_file_path):
@@ -175,6 +176,8 @@ def load_songs_list(file_path: str):
     with open(file_path, encoding='utf8') as csvfile:
         reader = csv.reader(csvfile)
         header = next(reader, None)
+        if header is None:
+            raise Exception(f'Empty csv file: {file_path}')
         artist_column_index = header.index('artist')
         title_column_index = header.index('title')
         track_column_index = header.index('track')
@@ -186,6 +189,8 @@ def load_songs_list(file_path: str):
     return songs_list
 
 def normalize_text(text: str) -> str:
+    if '.mp3' in text:
+        raise Exception(f'Stop word found: {text}')
     text = text.strip()
     text = text.replace('á', 'a')
     text = text.replace('é', 'e')

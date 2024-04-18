@@ -1,8 +1,8 @@
 import json
 import os.path
 from multiprocessing import Pool, freeze_support
-from extract_voice import extract_voice
-from select_sample import make_track_sample_by_voice
+from quiz_dataset_songs_tools.extract_voice import extract_voice
+from quiz_dataset_songs_tools.select_sample import make_track_sample_by_voice
 
 input_tracks_index = 'output/popular_youtube_2/tracks/index.json'
 output_samples_dir = 'output/popular_youtube_2/samples'

@@ -1,9 +1,9 @@
-import scipy.io.wavfile
+import scipy.io.wavfile # type: ignore
 import numpy as np
 import matplotlib.pyplot as plt
-from pydub import AudioSegment
+from pydub import AudioSegment # type: ignore
 
-def select_voice_sample(voice_file_path: str, sample_duration: str) -> int:
+def select_voice_sample(voice_file_path: str, sample_duration: int) -> int:
     sampleRate, audioBuffer = scipy.io.wavfile.read(voice_file_path)
     duration = int(len(audioBuffer) / sampleRate)
 
@@ -51,7 +51,7 @@ def cut_track_sample(track_file_path: str, offset_sec: int, duration_sec: int, s
     track_sample = track[track_sample_start:track_sample_end]
     track_sample.export(sample_file_path, format='mp3')
 
-def make_track_sample_by_voice(track_file_path: str, voice_file_path: str, sample_file_path: str) -> str:
+def make_track_sample_by_voice(track_file_path: str, voice_file_path: str, sample_file_path: str) -> None:
     sample_duration = 15
     sample_offset = select_voice_sample(voice_file_path, sample_duration)
     cut_track_sample(track_file_path, sample_offset, sample_duration, sample_file_path)

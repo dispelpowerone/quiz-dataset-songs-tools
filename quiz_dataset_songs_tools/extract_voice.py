@@ -1,6 +1,6 @@
 import librosa
 import numpy as np
-import soundfile as sf
+import soundfile as sf # type: ignore
 
 def extract_voice(track_file_path: str, voice_file_path: str) -> None:
     y, sr = librosa.load(track_file_path)
