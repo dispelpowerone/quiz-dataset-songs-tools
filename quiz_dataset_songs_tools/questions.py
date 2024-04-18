@@ -2,8 +2,8 @@ import json
 from quiz_dataset_songs_tools.gpt import Adviser
 
 
-input_samples_index_path = 'output/popular_youtube_2/samples/index.json'
-output_dir = 'output/popular_youtube_2/questions'
+input_samples_index_path = "output/popular_youtube_2/samples/index.json"
+output_dir = "output/popular_youtube_2/questions"
 advicer = Adviser(cache_dir=output_dir)
 
 
@@ -12,9 +12,9 @@ class ErrorLog:
         self._output_dir = output_dir
 
     def save(self, key: str, error):
-        file_path = f'{self._output_dir}/{key}.error.txt'
-        print(f'Log an error to {file_path}')
-        with open(file_path, 'w') as f:
+        file_path = f"{self._output_dir}/{key}.error.txt"
+        print(f"Log an error to {file_path}")
+        with open(file_path, "w") as f:
             f.write(str(error))
 
 
@@ -27,25 +27,25 @@ def load_sample_index():
 
 
 def save_index(index, dest_dir):
-    index_file_path = f'{dest_dir}/index.json'
-    print(f'Save index to {index_file_path}')
-    with open(index_file_path, 'w') as f:
+    index_file_path = f"{dest_dir}/index.json"
+    print(f"Save index to {index_file_path}")
+    with open(index_file_path, "w") as f:
         f.write(json.dumps(index, indent=4))
 
 
 def get_track_name(track_file_path: str) -> str:
-    track_file_name = track_file_path.split('/')[-1]
+    track_file_name = track_file_path.split("/")[-1]
     return track_file_name[:-4]
 
 
 def questions_for_sample(sample):
-    track_name = get_track_name(sample['track_file'])
-    track_title = sample['title']
-    track_artist = sample['artist']
+    track_name = get_track_name(sample["track_file"])
+    track_title = sample["title"]
+    track_artist = sample["artist"]
     try:
         print(f'Get similar songs for "{track_title}" by {track_artist}')
         similar_songs = advicer.get_similar_songs(track_title, track_artist, track_name)
-        print(f'Got: {similar_songs}')
+        print(f"Got: {similar_songs}")
         answers = [f'"{track_title}" by {track_artist}']
         for song in similar_songs:
             answers.append(f'"{song.title}" by {song.artist}')
@@ -53,8 +53,8 @@ def questions_for_sample(sample):
         # interesting_fact = advicer.get_interesting_fact(track_title, track_artist, track_name)
         interesting_fact = None
         question = {
-            'question': interesting_fact,
-            'answers': answers,
+            "question": interesting_fact,
+            "answers": answers,
         }
         question.update(sample)
         return question

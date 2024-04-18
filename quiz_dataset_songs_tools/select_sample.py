@@ -1,28 +1,27 @@
-import scipy.io.wavfile # type: ignore
+import scipy.io.wavfile  # type: ignore
 import numpy as np
 import matplotlib.pyplot as plt
-from pydub import AudioSegment # type: ignore
+from pydub import AudioSegment  # type: ignore
+
 
 def select_voice_sample(voice_file_path: str, sample_duration: int) -> int:
     sampleRate, audioBuffer = scipy.io.wavfile.read(voice_file_path)
     duration = int(len(audioBuffer) / sampleRate)
 
-    #minValue = np.min(audioBuffer)
+    # minValue = np.min(audioBuffer)
     maxValue = np.max(audioBuffer)
-    #print(f'min = {minValue}, max = {maxValue}')
+    # print(f'min = {minValue}, max = {maxValue}')
 
-    #plt.plot(audioBuffer)
-    #plt.show()
+    # plt.plot(audioBuffer)
+    # plt.show()
 
-    rangeSize = maxValue #- minValue
+    rangeSize = maxValue  # - minValue
     audioBuffer = np.clip(
-        audioBuffer,
-        0, # minValue + rangeSize * 0.2,
-        maxValue - rangeSize * 0.2
+        audioBuffer, 0, maxValue - rangeSize * 0.2  # minValue + rangeSize * 0.2,
     )
 
-    #plt.plot(audioBuffer)
-    #plt.show()
+    # plt.plot(audioBuffer)
+    # plt.show()
 
     sumBuffer = np.cumsum(audioBuffer)
 
@@ -37,11 +36,16 @@ def select_voice_sample(voice_file_path: str, sample_duration: int) -> int:
             bestSampleSum = sampleSum
             bestSampleOffset = i
 
-    print(f'Track duration {duration}. Best sample offset {int(bestSampleOffset / 60)}:{bestSampleOffset % 60}')
+    print(
+        f"Track duration {duration}. Best sample offset {int(bestSampleOffset / 60)}:{bestSampleOffset % 60}"
+    )
 
     return bestSampleOffset
 
-def cut_track_sample(track_file_path: str, offset_sec: int, duration_sec: int, sample_file_path: str):
+
+def cut_track_sample(
+    track_file_path: str, offset_sec: int, duration_sec: int, sample_file_path: str
+):
     try:
         track = AudioSegment.from_mp3(track_file_path)
     except:
@@ -49,9 +53,12 @@ def cut_track_sample(track_file_path: str, offset_sec: int, duration_sec: int, s
     track_sample_start = offset_sec * 1000
     track_sample_end = track_sample_start + duration_sec * 1000
     track_sample = track[track_sample_start:track_sample_end]
-    track_sample.export(sample_file_path, format='mp3')
+    track_sample.export(sample_file_path, format="mp3")
 
-def make_track_sample_by_voice(track_file_path: str, voice_file_path: str, sample_file_path: str) -> None:
+
+def make_track_sample_by_voice(
+    track_file_path: str, voice_file_path: str, sample_file_path: str
+) -> None:
     sample_duration = 15
     sample_offset = select_voice_sample(voice_file_path, sample_duration)
     cut_track_sample(track_file_path, sample_offset, sample_duration, sample_file_path)
